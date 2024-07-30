@@ -1,7 +1,7 @@
 ---
 title: "Alcohol vs Seat choice"
-author: "Your Name"
-date: "Fall 2020"
+author: "Juliet Clark"
+date: "July 25, 2024"
 output: html_document
 ---
 
@@ -14,31 +14,65 @@ require(tidyverse)
 require(tigerstats)
 davisdata <- read.csv(file="UCDavis.csv")
 ```
-## Our Goal is to answer this question Is there a difference between the alcohol consumed between the row
-## you choose to sit in??
 
-## Now with ggplot - first select the basic data
+# Introduction
+
+Our Goal is to answer this question Is there a difference between the alcohol consumed between the row
+you choose to sit in?
+
+The data came from UC Davis.
+
+$H_0$: There is no difference between the average number of drinks consumer and the row which people sit in.
+
+$H_A$: There is a difference between number of drinks and row for at least two rows.
+
+# Methods :
+
+In the data set davisdata, seat is a categorical variable and alcohol is a numerical variable. 
+
+We try to predict alcohol ~ seat so we use the numerical cat
+
+# Results
+
+## Descriptive Results
+
+### Graphical Summary
 
 ```{r}
 basicCN <- ggplot(davisdata,aes(y=alcohol,x=Seat))
 ```
-## Now add in boxplot
+
+Now add in boxplot
 
 ```{r}
 basicCN + geom_boxplot()
 ```
   
-  
-### get fancy  
-
-```{r}
-basicCN + geom_boxplot(notch=TRUE,outlier.color = "red") + stat_boxplot(geom ='errorbar') + labs(title="Fancy notch boxplot \n with 2 lines")
-```
+This box plot shows that the further from the front one is. the higher values we get for alcohol consumption.
 
 ## Numerical Summarys 
 
+```{r}
+favstats(alcohol~Seat,data=ucdavis1)
+```
+
 ## Inferential Tests
+
+```{r}
+model1 <- aov(alcohol~Seat, data=davisdata)
+summary.aov(model1)
+```
+
+The p-value of this anova test is 0.000116 which is less than 0.5 therefore we reject the null hypothesis. 
+
+## When significant follow up with TukeyHSD
+
+```{r}
+plot(TukeyHSD(model1))
+```
+
+From the middle to front there is no statistical difference in alcohol consumption. There is a difference in alcohol consumption from the front and back rows and also between the middle and back rows. 
 
 ## Conclusions
 
-
+Due to the p-value (0.000116) being less than 0.05, we reject the null hypothesis and therefore know that alcohol consumption is dependent on the row someone may choose to sit in. 
